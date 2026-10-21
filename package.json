@@ -1,0 +1,18 @@
+{
+  "name": "smart-grocery-budget-tracker",
+  "version": "1.0.0",
+  "description": "Mobile PWA Smart Grocery & Budget Safety Tracker for student supermarket trolley shopping",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "pwa",
+    "grocery-tracker",
+    "budget-safety",
+    "mobile-app"
+  ],
+  "author": "",
+  "license": "MIT"
+}

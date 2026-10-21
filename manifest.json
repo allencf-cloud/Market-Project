@@ -1,0 +1,19 @@
+{
+  "short_name": "SmartGrocery",
+  "name": "Smart Grocery & Budget Safety Tracker",
+  "description": "Aplikasi PWA asisten belanja bulanan hemat & pelacak anggaran untuk anak rantau",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#090d16",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "./"
+}
