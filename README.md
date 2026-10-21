@@ -36,6 +36,15 @@ Aplikasi Web Mobile (Progressive Web App) bergaya Native App yang dirancang khus
 | **F-05** | **Pengendali Anggaran (Budget Safety)** | Input batas maksimal uang belanja (budget). Kartu pemantau di bagian atas terus memperbarui rasio pengeluaran: <br>• **Aman (Hijau)**: < 75% budget<br>• **Waspada (Kuning)**: 75% - 90% budget<br>• **Kritis (Merah)**: 90% - 100% budget<br>• **Over Budget (Merah Berkedip & Haptic)**: Melebihi anggaran dengan peringatan cerdas dompet anak rantau. |
 | **F-06** | **Riwayat & Database Belanja** | Penyimpanan terstruktur di `localStorage`. Saat belanja selesai, transaksi diarsip per tanggal & bulan. Sesi riwayat dapat dimuat kembali sebagai *template* atau ditetapkan sebagai basis komparasi harga (F-04) untuk bulan berikutnya. Terdapat fitur ekspor cadangan JSON. |
 
+## ☁️ Integrasi Firebase Cloud (Firestore)
+
+Aplikasi telah terhubung ke **Firebase Cloud Firestore** dengan arsitektur **Hybrid Sync (Cloud + Offline Cache)**:
+- **`cart`**: Menyimpan daftar barang troli yang sedang aktif secara realtime.
+- **`budgetLimit`**: Batas maksimal anggaran belanja bulanan.
+- **`catalog`**: Database harga acuan bulan lalu untuk fitur Komparator Harga Realtime (F-04).
+- **`history`**: Riwayat transaksi struk belanja bulanan (F-06).
+- **Offline Resilience**: Jika koneksi terputus saat berada di dalam supermarket, data tetap tersimpan di `localStorage` dan otomatis disinkronkan ke Firebase begitu online.
+
 ---
 
 ## 🚀 Cara Menjalankan Aplikasi

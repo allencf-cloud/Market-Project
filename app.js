@@ -122,6 +122,17 @@
         localStorage.setItem('sg_history', JSON.stringify(State.history));
         localStorage.setItem('sg_catalog', JSON.stringify(State.catalog));
         localStorage.setItem('sg_baseline_title', State.baselineTitle);
+
+        // Sync to Firebase Cloud if available
+        if (window.FirebaseService && typeof window.FirebaseService.save === 'function') {
+          window.FirebaseService.save({
+            cart: State.cart,
+            budgetLimit: State.budgetLimit,
+            history: State.history,
+            catalog: State.catalog,
+            baselineTitle: State.baselineTitle
+          });
+        }
       } catch (e) {
         console.error('Failed saving localStorage', e);
       }
@@ -1530,6 +1541,49 @@
   // =========================================================================
   // BOOTSTRAP APP
   // =========================================================================
+  function handleRemoteFirebaseData(remoteData) {
+    if (!remoteData) return;
+    let hasChanges = false;
+
+    if (remoteData.cart && Array.isArray(remoteData.cart)) {
+      State.cart = remoteData.cart;
+      hasChanges = true;
+    }
+    if (typeof remoteData.budgetLimit === 'number') {
+      State.budgetLimit = remoteData.budgetLimit;
+      hasChanges = true;
+    }
+    if (remoteData.history && Array.isArray(remoteData.history)) {
+      State.history = remoteData.history;
+      hasChanges = true;
+    }
+    if (remoteData.catalog && typeof remoteData.catalog === 'object') {
+      State.catalog = remoteData.catalog;
+      hasChanges = true;
+    }
+    if (remoteData.baselineTitle) {
+      State.baselineTitle = remoteData.baselineTitle;
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      try {
+        localStorage.setItem('sg_cart', JSON.stringify(State.cart));
+        localStorage.setItem('sg_budget', State.budgetLimit.toString());
+        localStorage.setItem('sg_history', JSON.stringify(State.history));
+        localStorage.setItem('sg_catalog', JSON.stringify(State.catalog));
+        localStorage.setItem('sg_baseline_title', State.baselineTitle);
+      } catch (e) {}
+
+      const budgetInput = document.getElementById('inputBudgetLimit');
+      if (budgetInput) budgetInput.value = State.budgetLimit;
+
+      renderCartList();
+      renderHistoryList();
+      updateBudgetSafetyUI();
+    }
+  }
+
   function init() {
     Storage.load();
     initEventListeners();
@@ -1544,6 +1598,25 @@
 
     if (window.lucide) {
       lucide.createIcons();
+    }
+
+    // Connect to Firebase Cloud Realtime Sync
+    function attachFirebase() {
+      if (window.FirebaseService && typeof window.FirebaseService.listen === 'function') {
+        window.FirebaseService.listen(handleRemoteFirebaseData, {
+          cart: State.cart,
+          budgetLimit: State.budgetLimit,
+          history: State.history,
+          catalog: State.catalog,
+          baselineTitle: State.baselineTitle
+        });
+      }
+    }
+
+    if (window.FirebaseService) {
+      attachFirebase();
+    } else {
+      window.addEventListener('firebase-service-ready', attachFirebase, { once: true });
     }
   }
 

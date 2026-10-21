@@ -5,9 +5,9 @@ const ASSETS_TO_CACHE = [
   './index.html',
   './styles.css',
   './app.js',
+  './firebase-service.js',
   './manifest.json',
   './icons/icon.svg',
-  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap',
   'https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js'
 ];
 

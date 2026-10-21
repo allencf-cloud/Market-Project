@@ -39,6 +39,10 @@
             <span class="notch-text">SEKTOR // TROLI-01</span>
           </div>
           <div class="status-indicators">
+            <span class="cloud-status-badge" id="cloudStatusBadge" title="Status Cloud Firebase Firestore">
+              <i data-lucide="cloud" class="status-icon"></i>
+              <span id="cloudStatusText">CLOUD</span>
+            </span>
             <i data-lucide="wifi" class="status-icon"></i>
             <i data-lucide="battery-charging" class="status-icon"></i>
           </div>
@@ -578,6 +582,9 @@
 
     </div>
   </div>
+
+  <!-- Firebase Cloud Integration Module -->
+  <script type="module" src="firebase-service.js"></script>
 
   <!-- Main Application Script -->
   <script src="app.js"></script>

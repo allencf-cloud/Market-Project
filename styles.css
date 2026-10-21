@@ -172,6 +172,47 @@ html, body {
   gap: 6px;
 }
 
+.cloud-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border: 1px solid var(--c-charcoal);
+  background: var(--c-concrete-light);
+  color: var(--c-charcoal);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.cloud-status-badge.online {
+  background: var(--c-teal);
+  color: #FFFFFF;
+}
+
+.cloud-status-badge.syncing {
+  background: var(--c-ochre);
+  color: var(--c-charcoal);
+  animation: cloudPulse 1s infinite alternate;
+}
+
+.cloud-status-badge.offline {
+  background: var(--c-concrete);
+  color: var(--c-parchment);
+}
+
+@keyframes cloudPulse {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.cloud-status-badge .status-icon {
+  width: 10px;
+  height: 10px;
+}
+
 .status-icon {
   width: 14px;
   height: 14px;
