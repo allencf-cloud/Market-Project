@@ -1,56 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="50%" stop-color="#1e293b" />
-      <stop offset="100%" stop-color="#0f766e" />
-    </linearGradient>
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10b981" />
-      <stop offset="100%" stop-color="#06b6d4" />
-    </linearGradient>
-    <linearGradient id="cartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" />
-      <stop offset="100%" stop-color="#e2e8f0" />
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
+    <!-- Industrial Blueprint Grid Pattern -->
+    <pattern id="blueprintGrid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#232425" stroke-width="0.8" opacity="0.15" />
+    </pattern>
+    <pattern id="diagonalHatch" width="16" height="16" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#D0312D" stroke-width="3" opacity="0.25" />
+    </pattern>
   </defs>
-  
-  <!-- App Background Circle -->
-  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
-  
-  <!-- Subtle Glowing Ring -->
-  <circle cx="256" cy="256" r="180" fill="none" stroke="url(#accentGrad)" stroke-width="6" opacity="0.4" filter="url(#glow)" />
-  
-  <!-- Trolley Basket -->
-  <g transform="translate(64, 70)">
-    <!-- Shield / Safety Badge behind cart -->
-    <path d="M 192 40 L 290 80 C 290 200, 192 260, 192 260 C 192 260, 94 200, 94 80 Z" fill="#10b981" opacity="0.18" />
-    <path d="M 192 55 L 275 90 C 275 190, 192 245, 192 245 C 192 245, 109 190, 109 90 Z" fill="none" stroke="#10b981" stroke-width="4" stroke-dasharray="8 6" opacity="0.6" />
-    
-    <!-- Grocery Cart Path -->
-    <path d="M 40 70 L 80 70 L 125 210 L 285 210 L 320 110 L 105 110" 
-          fill="none" stroke="url(#cartGrad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
-    
-    <!-- Grid inside basket -->
-    <line x1="150" y1="120" x2="165" y2="200" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" />
-    <line x1="205" y1="120" x2="215" y2="200" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" />
-    <line x1="260" y1="120" x2="265" y2="200" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" />
-    <line x1="115" y1="160" x2="300" y2="160" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" />
 
-    <!-- Wheels -->
-    <circle cx="140" cy="265" r="24" fill="#0f172a" stroke="#10b981" stroke-width="12" />
-    <circle cx="270" cy="265" r="24" fill="#0f172a" stroke="#10b981" stroke-width="12" />
-    
-    <!-- Sparkle / Safety Checkmark in corner -->
-    <circle cx="280" cy="80" r="45" fill="#10b981" filter="url(#glow)" />
-    <path d="M 265 80 L 276 92 L 298 68" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Parchment Base with heavy Charcoal border (Zero Radius) -->
+  <rect width="512" height="512" fill="#EFECE6" stroke="#232425" stroke-width="16" />
+  <rect width="512" height="512" fill="url(#blueprintGrid)" />
+
+  <!-- Diagonal Constructivist Slash Accent (Red & Ochre) -->
+  <polygon points="0,0 512,180 512,240 0,60" fill="#D0312D" opacity="0.9" />
+  <polygon points="0,60 512,240 512,260 0,80" fill="#D49B35" />
+
+  <!-- Corner Rivet Screws -->
+  <circle cx="28" cy="28" r="8" fill="#8C8C8C" stroke="#232425" stroke-width="4" />
+  <circle cx="484" cy="28" r="8" fill="#8C8C8C" stroke="#232425" stroke-width="4" />
+  <circle cx="28" cy="484" r="8" fill="#8C8C8C" stroke="#232425" stroke-width="4" />
+  <circle cx="484" cy="484" r="8" fill="#8C8C8C" stroke="#232425" stroke-width="4" />
+
+  <!-- Industrial Constructivist Block Cart Graphic -->
+  <g transform="translate(64, 110)">
+    <!-- Shadow block -->
+    <polygon points="50,110 320,110 290,240 100,240" fill="#232425" opacity="0.2" />
+
+    <!-- Solid Cart Chassis -->
+    <polygon points="40,100 310,100 280,230 90,230" fill="#EFECE6" stroke="#232425" stroke-width="12" />
+    <polygon points="40,100 310,100 280,230 90,230" fill="url(#diagonalHatch)" />
+
+    <!-- Constructivist Monoline Handle & Support -->
+    <polyline points="20,50 60,50 100,230 290,230" fill="none" stroke="#232425" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter" />
+
+    <!-- Heavy Industrial Wheels -->
+    <circle cx="110" cy="280" r="28" fill="#232425" />
+    <circle cx="110" cy="280" r="14" fill="#EFECE6" stroke="#D0312D" stroke-width="6" />
+
+    <circle cx="260" cy="280" r="28" fill="#232425" />
+    <circle cx="260" cy="280" r="14" fill="#EFECE6" stroke="#D0312D" stroke-width="6" />
+
+    <!-- Soviet Red Star & Safety Stamp -->
+    <polygon points="320,40 332,68 362,68 338,86 348,114 320,96 292,114 302,86 278,68 308,68" fill="#D0312D" stroke="#232425" stroke-width="4" />
   </g>
-  
-  <!-- App text / subtitle brand mark -->
-  <text x="256" y="445" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="34" fill="#f8fafc" text-anchor="middle" letter-spacing="2">SMART GROCERY</text>
-  <text x="256" y="475" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="20" fill="#34d399" text-anchor="middle" letter-spacing="4">BUDGET SAFETY</text>
+
+  <!-- Factory Manifest Typography -->
+  <text x="256" y="445" font-family="'Bebas Neue', Impact, sans-serif" font-weight="900" font-size="44" fill="#232425" text-anchor="middle" letter-spacing="4">SMART GROCERY</text>
+  <text x="256" y="478" font-family="'JetBrains Mono', monospace" font-weight="800" font-size="16" fill="#D0312D" text-anchor="middle" letter-spacing="3">MANIFES INDUSTRIAL 1920</text>
 </svg>

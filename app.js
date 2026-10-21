@@ -52,15 +52,15 @@
     }
   ];
 
-  // Category Icons & Colors
+  // Category Icons & Industrial Constructivist Geometric Patterns
   const CATEGORY_MAP = {
-    'Bahan Pokok': { icon: '🍚', color: '#10b981' },
-    'Lauk & Protein': { icon: '🍗', color: '#f59e0b' },
-    'Sayur & Buah': { icon: '🥦', color: '#84cc16' },
-    'Bumbu & Instan': { icon: '🍜', color: '#ec4899' },
-    'Camilan & Minuman': { icon: '☕', color: '#06b6d4' },
-    'Mandi & Cuci': { icon: '🧼', color: '#8b5cf6' },
-    'Lainnya': { icon: '📦', color: '#94a3b8' }
+    'Bahan Pokok': { icon: '🍚', symbol: '▣', pattern: 'pattern-staples', color: '#3A5A69', labelRu: 'ОСНОВНОЙ ПАЕК' },
+    'Lauk & Protein': { icon: '🍗', symbol: '▲', pattern: 'pattern-protein', color: '#D0312D', labelRu: 'ПРОТЕИН' },
+    'Sayur & Buah': { icon: '🥦', symbol: '◐', pattern: 'pattern-fresh', color: '#3A5A69', labelRu: 'СВЕЖИЕ ПРОДУКТЫ' },
+    'Bumbu & Instan': { icon: '🍜', symbol: '❖', pattern: 'pattern-spices', color: '#D49B35', labelRu: 'КОНЦЕНТРАТЫ' },
+    'Camilan & Minuman': { icon: '☕', symbol: '◎', pattern: 'pattern-dairy', color: '#D49B35', labelRu: 'МОЛОКО И ЧАЙ' },
+    'Mandi & Cuci': { icon: '🧼', symbol: '▤', pattern: 'pattern-hygiene', color: '#3A5A69', labelRu: 'САНИТАРИЯ' },
+    'Lainnya': { icon: '📦', symbol: '◈', pattern: 'pattern-general', color: '#8C8C8C', labelRu: 'ПРОЧИЕ' }
   };
 
   // =========================================================================
@@ -479,11 +479,12 @@
 
     let itemsHtml = '';
 
-    filtered.forEach((item) => {
-      const catMeta = CATEGORY_MAP[item.category] || { icon: '📦', color: '#94a3b8' };
+    filtered.forEach((item, idx) => {
+      const catMeta = CATEGORY_MAP[item.category] || { icon: '📦', symbol: '◈', pattern: 'pattern-general', color: '#8C8C8C', labelRu: 'ПРОЧИЕ' };
       const comp = comparePriceWithPrevious(item.name, item.unitPrice);
       const discCalc = calculateTieredDiscount(item.unitPrice, item.disc1, item.disc2);
       const itemSubtotal = discCalc.priceFinal * item.qty;
+      const serialNum = (idx + 1).toString().padStart(3, '0');
 
       // Build Discount Badge HTML if discounted (F-03)
       let discountBadgeHtml = '';
@@ -493,26 +494,42 @@
         discountBadgeHtml = `
           <div class="item-discount-row">
             <span class="discount-formula-badge">
-              <i data-lucide="percent" style="width: 12px; height: 12px;"></i>
-              Diskon ${discLabel} (Efektif ${discCalc.effectiveDiscountPercent}%)
+              <span class="badge-icon-sq">DIS</span>
+              DISKON ${discLabel} (EFEKTIF ${discCalc.effectiveDiscountPercent}%)
             </span>
-            <span class="discount-saved-val">Hemat ${formatRp(discCalc.totalDiscountAmount * item.qty)}</span>
+            <span class="discount-saved-val">HEMAT ${formatRp(discCalc.totalDiscountAmount * item.qty)}</span>
           </div>
         `;
       }
 
       itemsHtml += `
-        <div class="cart-item-card" data-id="${item.id}">
+        <div class="cart-item-card ${catMeta.pattern}" data-id="${item.id}">
+          <!-- Technical Rivets -->
+          <span class="card-rivet r-tl"></span>
+          <span class="card-rivet r-tr"></span>
+          <span class="card-rivet r-bl"></span>
+          <span class="card-rivet r-br"></span>
+
+          <!-- Factory Manifest Strip -->
+          <div class="card-manifest-bar">
+            <span class="manifest-num">MANIFES № ${serialNum}</span>
+            <span class="manifest-cat-code">${catMeta.symbol} ${catMeta.labelRu || item.category.toUpperCase()}</span>
+            <span class="manifest-batch">BATCH // 26-OKT</span>
+          </div>
+
           <!-- Top Row -->
           <div class="card-top-row">
             <div class="item-main-details">
-              <div class="item-icon-avatar">${catMeta.icon}</div>
+              <div class="item-icon-avatar" title="${item.category}">
+                <span class="avatar-sym">${catMeta.symbol}</span>
+                <span class="avatar-icon">${catMeta.icon}</span>
+              </div>
               <div class="item-headings">
                 <span class="item-category-tag">${item.category}</span>
                 <h4 class="item-name">${escapeHtml(item.name)}</h4>
                 <div class="item-unit-pricing">
-                  ${formatRp(discCalc.priceFinal)} / ${item.unit}
-                  ${discCalc.totalDiscountAmount > 0 ? `<s style="opacity:0.5; font-size:10px; margin-left:3px;">${formatRp(item.unitPrice)}</s>` : ''}
+                  <span class="unit-price-val">${formatRp(discCalc.priceFinal)} / ${item.unit}</span>
+                  ${discCalc.totalDiscountAmount > 0 ? `<s class="strike-original">${formatRp(item.unitPrice)}</s>` : ''}
                   
                   <!-- F-04 Realtime Price Comparison Tag -->
                   <span class="price-comparator-tag ${comp.badgeClass}" title="${comp.description}">
@@ -551,7 +568,7 @@
 
             <!-- Total Subtotal -->
             <div class="item-calculated-total">
-              <span class="calc-total-label">Subtotal</span>
+              <span class="calc-total-label">SUBTOTAL ITEM</span>
               <span class="calc-total-amount">${formatRp(itemSubtotal)}</span>
             </div>
           </div>
