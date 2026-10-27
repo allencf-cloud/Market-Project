@@ -1,13 +1,21 @@
 /**
  * Firebase Service for Smart Grocery & Budget Safety Tracker
- * Cloud Firestore Integration with Offline Resilience & Realtime Sync
+ * Cloud Firestore Integration with Multi-Device Realtime Sync & Offline Resilience
+ * 
+ * Architecture:
+ * - Realtime push synchronization via onSnapshot() (NO one-time getDoc / getDocs)
+ * - Offline cache persistence with IndexedDB
+ * - Dual-layer fallback with LocalStorage
+ * - Tracks: storeLocation, shoppingDate, walletLimit, items, totalSpent, totalSaved
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { 
   getFirestore, 
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   doc, 
-  getDoc, 
   setDoc, 
   onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -22,7 +30,7 @@ const firebaseConfig = {
   appId: "1:383618912955:web:e941662e7ab27c4bb94f9e"
 };
 
-// Initialize Firebase App & Firestore
+// Initialize Firebase App & Firestore with Offline Persistence
 let app = null;
 let db = null;
 let isInitialized = false;
@@ -43,9 +51,21 @@ function updateCloudIndicator(status, text) {
 
 try {
   app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  
+  // Try initializing Firestore with multi-tab persistent IndexedDB local cache
+  try {
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
+  } catch (cacheErr) {
+    console.warn("[Firebase] Multi-tab persistent cache fallback:", cacheErr);
+    db = getFirestore(app);
+  }
+
   isInitialized = true;
-  console.log("[Firebase] Initialized successfully with project:", firebaseConfig.projectId);
+  console.log("[Firebase] Firestore initialized successfully with project:", firebaseConfig.projectId);
   updateCloudIndicator('syncing', 'CLOUD...');
 } catch (err) {
   console.warn("[Firebase] Initialization failed:", err);
@@ -58,7 +78,8 @@ window.FirebaseService = {
 
   /**
    * Initialize real-time synchronization with Firestore
-   * @param {Function} onDataReceived Callback when remote data is fetched or updated
+   * STRICTLY uses onSnapshot() - NEVER uses getDoc() or getDocs()
+   * @param {Function} onDataReceived Callback when remote data is pushed from Firestore
    * @param {Object} initialLocalData Data to seed in Firestore if document is empty
    */
   listen(onDataReceived, initialLocalData) {
@@ -72,8 +93,8 @@ window.FirebaseService = {
     const docRef = doc(db, COLLECTION_NAME, DOC_ID);
 
     try {
-      // Set up real-time listener
-      onSnapshot(docRef, (docSnap) => {
+      // Set up REALTIME listener via onSnapshot()
+      onSnapshot(docRef, { includeMetadataChanges: false }, (docSnap) => {
         if (docSnap.exists()) {
           const remoteData = docSnap.data();
           console.log("[Firebase] Realtime snapshot received from Firestore:", remoteData);
@@ -85,7 +106,7 @@ window.FirebaseService = {
           // Document does not exist yet: seed with initial local data
           console.log("[Firebase] Remote doc does not exist yet. Seeding initial data...");
           updateCloudIndicator('syncing', 'SEEDING');
-          this.saveImmediate(initialLocalData);
+          this.saveImmediate(initialLocalData || {});
         }
       }, (error) => {
         console.warn("[Firebase] Snapshot listener notice (offline or permission):", error.message);
@@ -98,8 +119,8 @@ window.FirebaseService = {
   },
 
   /**
-   * Debounced save to Firestore (prevents spamming writes on rapid quantity/price edits)
-   * @param {Object} stateData Object containing cart, budgetLimit, history, catalog, baselineTitle
+   * Debounced save to Firestore (for rapid keystrokes/price typing)
+   * @param {Object} stateData Object containing trolley session state
    */
   save(stateData) {
     if (!isInitialized || !db) return;
@@ -109,28 +130,38 @@ window.FirebaseService = {
 
     saveDebounceTimer = setTimeout(() => {
       this.saveImmediate(stateData);
-    }, 800);
+    }, 400); // 400ms debounce
   },
 
   /**
-   * Immediate write to Firestore
+   * Immediate write to Firestore (for button clicks: Add, Delete, Qty + / -)
+   * Ensures sub-second sync across mobile and desktop
    */
   async saveImmediate(stateData) {
-    if (!isInitialized || !db) return;
+    if (!isInitialized || !db || !stateData) return;
 
     try {
       const docRef = doc(db, COLLECTION_NAME, DOC_ID);
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+      
       const payload = {
-        cart: stateData.cart || [],
-        budgetLimit: stateData.budgetLimit || 500000,
+        storeLocation: stateData.storeLocation || "Lotte Mart Grocery - Puri Indah",
+        shoppingDate: stateData.shoppingDate || new Date().toISOString().split('T')[0],
+        walletLimit: Number(stateData.walletLimit || stateData.budgetLimit || 500000),
+        budgetLimit: Number(stateData.walletLimit || stateData.budgetLimit || 500000), // backward-compatible
+        items: stateData.items || stateData.cart || [],
+        cart: stateData.items || stateData.cart || [], // backward-compatible
+        totalSpent: Number(stateData.totalSpent || 0),
+        totalSaved: Number(stateData.totalSaved || 0),
         history: stateData.history || [],
         catalog: stateData.catalog || {},
         baselineTitle: stateData.baselineTitle || '',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        lastUpdatedBy: isMobile ? 'Mobile-HP' : 'Desktop-PC'
       };
 
       await setDoc(docRef, payload, { merge: true });
-      console.log("[Firebase] Successfully synced state to Firestore!");
+      console.log("[Firebase] Successfully synced state to Firestore!", payload);
       updateCloudIndicator('online', 'CLOUD OK');
     } catch (err) {
       console.warn("[Firebase] Error saving to Firestore:", err.message);

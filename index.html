@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -7,6 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="SmartGrocery">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="SmartGrocery">
+  <meta name="format-detection" content="telephone=no">
   <meta name="description" content="Aplikasi PWA asisten belanja bulanan hemat & pelacak anggaran troli supermarket untuk anak rantau">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
@@ -62,6 +65,38 @@
             <button class="icon-btn" id="btnResetCart" title="Reset Keranjang" aria-label="Reset Keranjang">
               <i data-lucide="rotate-ccw"></i>
             </button>
+          </div>
+        </div>
+
+        <!-- Header Sesi Belanja (Lokasi Supermarket & Tanggal Transaksi) -->
+        <div class="session-meta-strip" id="sessionMetaStrip">
+          <div class="session-field-group store-group">
+            <label for="selectStoreLocation" class="session-field-label">
+              <i data-lucide="map-pin" class="field-icon"></i>
+              <span>LOKASI SUPERMARKET</span>
+            </label>
+            <div class="session-select-container">
+              <select id="selectStoreLocation" class="session-store-select" aria-label="Pilih Lokasi Supermarket">
+                <option value="Lotte Mart Grocery - Puri Indah" selected>Lotte Mart Grocery - Puri Indah</option>
+                <option value="Superindo - Kaliurang">Superindo - Kaliurang</option>
+                <option value="Superindo - Daan Mogot">Superindo - Daan Mogot</option>
+                <option value="Grand Lucky - SCBD">Grand Lucky - SCBD</option>
+                <option value="Hypermart - Puri Indah">Hypermart - Puri Indah</option>
+                <option value="Hero Supermarket - Mall Taman Anggrek">Hero Supermarket - Mall Taman Anggrek</option>
+                <option value="Transmart Carrefour">Transmart Carrefour</option>
+                <option value="Alfamart / Indomaret">Alfamart / Indomaret</option>
+                <option value="Pasar Tradisional">Pasar Tradisional</option>
+                <option value="custom">âœï¸ Toko Lainnya...</option>
+              </select>
+              <input type="text" id="inputCustomStore" class="session-custom-input hidden" placeholder="Ketik nama toko..." />
+            </div>
+          </div>
+          <div class="session-field-group date-group">
+            <label for="inputShoppingDate" class="session-field-label">
+              <i data-lucide="calendar" class="field-icon"></i>
+              <span>TANGGAL TRANSAKSI</span>
+            </label>
+            <input type="date" id="inputShoppingDate" class="session-date-input" aria-label="Tanggal Transaksi Belanja" />
           </div>
         </div>
 
@@ -359,7 +394,7 @@
                   <button type="button" class="stepper-btn" id="btnQtyMinus" aria-label="Kurang">
                     <i data-lucide="minus"></i>
                   </button>
-                  <input type="number" id="formQty" class="stepper-input" value="1" min="0.1" step="any" required>
+                  <input type="number" id="formQty" class="stepper-input" inputmode="decimal" value="1" min="0.1" step="any" required>
                   <button type="button" class="stepper-btn" id="btnQtyPlus" aria-label="Tambah">
                     <i data-lucide="plus"></i>
                   </button>
@@ -378,7 +413,7 @@
               </div>
               <div class="large-input-wrapper">
                 <span class="currency-prefix">Rp</span>
-                <input type="number" id="formUnitPrice" class="large-num-input" placeholder="0" min="0" step="100" required>
+                <input type="number" id="formUnitPrice" class="large-num-input" inputmode="numeric" placeholder="0" min="0" step="100" required>
               </div>
 
               <!-- Past Month Reference Notice -->
@@ -426,11 +461,11 @@
                 <div class="form-row-2col mt-2">
                   <div class="form-group mb-0">
                     <label class="form-label-sm" for="formDisc1">Diskon 1 (%)</label>
-                    <input type="number" id="formDisc1" class="form-input-sm" value="0" min="0" max="100" step="1">
+                    <input type="number" id="formDisc1" class="form-input-sm" inputmode="numeric" value="0" min="0" max="100" step="1">
                   </div>
                   <div class="form-group mb-0">
                     <label class="form-label-sm" for="formDisc2">Diskon 2 Bertingkat (%)</label>
-                    <input type="number" id="formDisc2" class="form-input-sm" value="0" min="0" max="100" step="1">
+                    <input type="number" id="formDisc2" class="form-input-sm" inputmode="numeric" value="0" min="0" max="100" step="1">
                   </div>
                 </div>
 
@@ -557,7 +592,7 @@
           <div class="p-4">
             <div class="large-input-wrapper mb-3">
               <span class="currency-prefix">Rp</span>
-              <input type="number" id="quickBudgetInput" class="large-num-input" value="500000" step="10000">
+              <input type="number" id="quickBudgetInput" class="large-num-input" inputmode="numeric" value="500000" step="10000">
             </div>
 
             <div class="budget-presets-row mb-4">

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Smart Grocery & Budget Safety Tracker (PWA)
  * Arsitektur: Mobile PWA, Ramah Jempol, Native Look & Feel
  * Fitur: F-01 (Pencatatan), F-02 (Kuantitas Otomatis), F-03 (Diskon Bertingkat),
@@ -69,6 +69,8 @@
   const State = {
     cart: [],
     budgetLimit: 500000,
+    storeLocation: 'Lotte Mart Grocery - Puri Indah',
+    shoppingDate: new Date().toISOString().split('T')[0],
     selectedCategory: 'ALL',
     history: [],
     catalog: {},
@@ -96,12 +98,16 @@
       try {
         const savedCart = localStorage.getItem('sg_cart');
         const savedBudget = localStorage.getItem('sg_budget');
+        const savedStore = localStorage.getItem('sg_store_location');
+        const savedDate = localStorage.getItem('sg_shopping_date');
         const savedHistory = localStorage.getItem('sg_history');
         const savedCatalog = localStorage.getItem('sg_catalog');
         const savedBaselineTitle = localStorage.getItem('sg_baseline_title');
 
         if (savedCart) State.cart = JSON.parse(savedCart);
         if (savedBudget) State.budgetLimit = parseFloat(savedBudget) || 500000;
+        if (savedStore) State.storeLocation = savedStore;
+        if (savedDate) State.shoppingDate = savedDate;
         if (savedHistory) State.history = JSON.parse(savedHistory);
         else State.history = [...DEFAULT_HISTORY_PRESET];
 
@@ -115,29 +121,148 @@
         State.catalog = { ...DEFAULT_BASELINE_CATALOG };
       }
     },
-    save() {
+    save(immediate = false) {
       try {
         localStorage.setItem('sg_cart', JSON.stringify(State.cart));
         localStorage.setItem('sg_budget', State.budgetLimit.toString());
+        localStorage.setItem('sg_store_location', State.storeLocation);
+        localStorage.setItem('sg_shopping_date', State.shoppingDate);
         localStorage.setItem('sg_history', JSON.stringify(State.history));
         localStorage.setItem('sg_catalog', JSON.stringify(State.catalog));
         localStorage.setItem('sg_baseline_title', State.baselineTitle);
 
-        // Sync to Firebase Cloud if available
-        if (window.FirebaseService && typeof window.FirebaseService.save === 'function') {
-          window.FirebaseService.save({
-            cart: State.cart,
+        // Sync to Firebase Cloud Firestore Multi-Device Realtime
+        if (window.FirebaseService) {
+          const totals = calculateCartTotals();
+          const syncData = {
+            storeLocation: State.storeLocation,
+            shoppingDate: State.shoppingDate,
+            walletLimit: State.budgetLimit,
             budgetLimit: State.budgetLimit,
+            items: State.cart,
+            cart: State.cart,
+            totalSpent: totals.totalNet,
+            totalSaved: totals.totalDiscountSavings,
             history: State.history,
             catalog: State.catalog,
             baselineTitle: State.baselineTitle
-          });
+          };
+
+          if (immediate && typeof window.FirebaseService.saveImmediate === 'function') {
+            window.FirebaseService.saveImmediate(syncData);
+          } else if (typeof window.FirebaseService.save === 'function') {
+            window.FirebaseService.save(syncData);
+          }
         }
       } catch (e) {
         console.error('Failed saving localStorage', e);
       }
     }
   };
+
+  // =========================================================================
+  // SESSION CONTEXT & DATE UTILITIES (Header Sesi Belanja)
+  // =========================================================================
+  function formatDateDisplay(dateStr) {
+    if (!dateStr) return '';
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+      return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  function updateSessionMetaUI() {
+    const storeSelect = document.getElementById('selectStoreLocation');
+    const customInput = document.getElementById('inputCustomStore');
+    const dateInput = document.getElementById('inputShoppingDate');
+    const receiptDate = document.getElementById('receiptDate');
+
+    if (storeSelect) {
+      let matched = false;
+      for (let i = 0; i < storeSelect.options.length; i++) {
+        if (storeSelect.options[i].value === State.storeLocation) {
+          storeSelect.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched && State.storeLocation) {
+        storeSelect.value = 'custom';
+        if (customInput) {
+          customInput.classList.remove('hidden');
+          customInput.value = State.storeLocation;
+        }
+      } else if (customInput && storeSelect.value !== 'custom') {
+        customInput.classList.add('hidden');
+      }
+    }
+
+    if (dateInput && State.shoppingDate) {
+      dateInput.value = State.shoppingDate;
+    }
+
+    if (receiptDate) {
+      receiptDate.textContent = ${State.storeLocation} // ;
+    }
+  }
+
+  // =========================================================================
+  // SESSION CONTEXT & DATE UTILITIES (Header Sesi Belanja)
+  // =========================================================================
+  function formatDateDisplay(dateStr) {
+    if (!dateStr) return '';
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+      return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  function updateSessionMetaUI() {
+    const storeSelect = document.getElementById('selectStoreLocation');
+    const customInput = document.getElementById('inputCustomStore');
+    const dateInput = document.getElementById('inputShoppingDate');
+    const receiptDate = document.getElementById('receiptDate');
+
+    if (storeSelect) {
+      let matched = false;
+      for (let i = 0; i < storeSelect.options.length; i++) {
+        if (storeSelect.options[i].value === State.storeLocation) {
+          storeSelect.selectedIndex = i;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched && State.storeLocation) {
+        storeSelect.value = 'custom';
+        if (customInput) {
+          customInput.classList.remove('hidden');
+          customInput.value = State.storeLocation;
+        }
+      } else if (customInput && storeSelect.value !== 'custom') {
+        customInput.classList.add('hidden');
+      }
+    }
+
+    if (dateInput && State.shoppingDate) {
+      dateInput.value = State.shoppingDate;
+    }
+
+    if (receiptDate) {
+      receiptDate.textContent = `${State.storeLocation} // ${formatDateDisplay(State.shoppingDate)}`;
+    }
+  }
 
   // =========================================================================
   // FORMATTERS & UTILITIES
@@ -905,8 +1030,9 @@
 
       const newHistorySession = {
         id: 'hist-' + Date.now(),
-        title: `Belanja Bulanan Kost - ${monthYear}`,
-        date: now.toISOString().split('T')[0],
+        title: `${State.storeLocation} (${dateFormatted})`,
+        storeLocation: State.storeLocation,
+        date: State.shoppingDate || now.toISOString().split('T')[0],
         formattedDate: dateFormatted,
         totalSpending: totals.totalNet,
         totalSaved: totals.totalDiscountSavings,
@@ -936,7 +1062,7 @@
 
       // Clear Cart
       State.cart = [];
-      Storage.save();
+      Storage.save(true);
       this.close();
       renderCartList();
       renderHistoryList();
@@ -961,7 +1087,7 @@
       State.budgetLimit = val;
       const mainInput = document.getElementById('inputBudgetLimit');
       if (mainInput) mainInput.value = val;
-      Storage.save();
+      Storage.save(true);
       updateBudgetSafetyUI();
       this.close();
       showToast(`Batas anggaran diatur ke ${formatRp(val)}`);
@@ -1006,7 +1132,7 @@
       if (State.cart.length === 0) return;
       if (confirm('Kosongkan semua barang dari keranjang belanja troli Anda?')) {
         State.cart = [];
-        Storage.save();
+        Storage.save(true);
         renderCartList();
         showToast('Keranjang belanja dikosongkan', 'rotate-ccw');
       }
@@ -1039,7 +1165,7 @@
     document.getElementById('btnSaveBudget').addEventListener('click', () => {
       const val = parseFloat(document.getElementById('inputBudgetLimit').value) || 500000;
       State.budgetLimit = val;
-      Storage.save();
+      Storage.save(true);
       updateBudgetSafetyUI();
       showToast(`Anggaran berhasil disimpan: ${formatRp(val)}`);
       switchTab('tabBelanja');
@@ -1168,6 +1294,100 @@
       });
     });
 
+    // Header Sesi Belanja Event Listeners (Lokasi Supermarket & Tanggal)
+    const storeSelectEl = document.getElementById('selectStoreLocation');
+    const customStoreInputEl = document.getElementById('inputCustomStore');
+    const shoppingDateInputEl = document.getElementById('inputShoppingDate');
+
+    if (storeSelectEl) {
+      storeSelectEl.addEventListener('change', (e) => {
+        if (e.target.value === 'custom') {
+          if (customStoreInputEl) {
+            customStoreInputEl.classList.remove('hidden');
+            customStoreInputEl.focus();
+          }
+        } else {
+          if (customStoreInputEl) {
+            customStoreInputEl.classList.add('hidden');
+          }
+          State.storeLocation = e.target.value;
+          Storage.save(true);
+          updateSessionMetaUI();
+          showToast(Lokasi: , 'map-pin');
+        }
+      });
+    }
+
+    if (customStoreInputEl) {
+      let customDebounce = null;
+      customStoreInputEl.addEventListener('input', (e) => {
+        State.storeLocation = e.target.value.trim() || 'Lotte Mart Grocery - Puri Indah';
+        clearTimeout(customDebounce);
+        customDebounce = setTimeout(() => {
+          Storage.save(true);
+          updateSessionMetaUI();
+        }, 500);
+      });
+    }
+
+    if (shoppingDateInputEl) {
+      shoppingDateInputEl.addEventListener('change', (e) => {
+        if (e.target.value) {
+          State.shoppingDate = e.target.value;
+          Storage.save(true);
+          updateSessionMetaUI();
+          showToast(Tanggal: , 'calendar');
+        }
+      });
+    }
+
+    // Header Sesi Belanja Event Listeners (Lokasi Supermarket & Tanggal)
+    const storeSelectEl = document.getElementById('selectStoreLocation');
+    const customStoreInputEl = document.getElementById('inputCustomStore');
+    const shoppingDateInputEl = document.getElementById('inputShoppingDate');
+
+    if (storeSelectEl) {
+      storeSelectEl.addEventListener('change', (e) => {
+        if (e.target.value === 'custom') {
+          if (customStoreInputEl) {
+            customStoreInputEl.classList.remove('hidden');
+            customStoreInputEl.focus();
+          }
+        } else {
+          if (customStoreInputEl) {
+            customStoreInputEl.classList.add('hidden');
+          }
+          State.storeLocation = e.target.value;
+          Storage.save(true);
+          updateSessionMetaUI();
+          showToast(`Lokasi: ${State.storeLocation}`, 'map-pin');
+        }
+      });
+    }
+
+    if (customStoreInputEl) {
+      let customDebounce = null;
+      customStoreInputEl.addEventListener('input', (e) => {
+        State.storeLocation = e.target.value.trim() || 'Lotte Mart Grocery - Puri Indah';
+        clearTimeout(customDebounce);
+        customDebounce = setTimeout(() => {
+          Storage.save(true);
+          updateSessionMetaUI();
+        }, 500);
+      });
+    }
+
+    if (shoppingDateInputEl) {
+      shoppingDateInputEl.addEventListener('change', (e) => {
+        if (e.target.value) {
+          State.shoppingDate = e.target.value;
+          Storage.save(true);
+          updateSessionMetaUI();
+          showToast(`Tanggal: ${formatDateDisplay(State.shoppingDate)}`, 'calendar');
+        }
+      });
+    }
+
     // Form Submit (Add / Edit Item)
     itemModal.form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -1240,7 +1460,7 @@
             ...it,
             id: 'item-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5)
           }));
-          Storage.save();
+          Storage.save(true);
           renderCartList();
           switchTab('tabBelanja');
           showToast(`Berhasil memuat ${State.cart.length} item dari riwayat!`);
@@ -1266,7 +1486,7 @@
             };
           });
           State.baselineTitle = `Sesi ${sess.formattedDate || sess.date}`;
-          Storage.save();
+          Storage.save(true);
           renderHistoryList();
           renderCartList();
           showToast(`Basis komparasi harga diperbarui ke sesi ${sess.formattedDate}!`);
@@ -1399,7 +1619,7 @@
       showToast(`"${name}" dimasukkan ke troli!`);
     }
 
-    Storage.save();
+    Storage.save(true);
     itemModal.close();
     renderCartList();
     triggerHaptic('light');
@@ -1417,7 +1637,7 @@
     }
 
     item.qty = Math.round(newQty * 10) / 10;
-    Storage.save();
+    Storage.save(true);
     renderCartList();
     triggerHaptic('light');
   }
@@ -1428,7 +1648,7 @@
     const itemName = item ? item.name : 'Barang';
 
     State.cart = State.cart.filter((it) => it.id !== id);
-    Storage.save();
+    Storage.save(true);
     renderCartList();
     showToast(`"${itemName}" dihapus dari keranjang`, 'trash-2');
     triggerHaptic('light');
@@ -1499,7 +1719,7 @@
       }
     ];
 
-    Storage.save();
+    Storage.save(true);
     renderCartList();
     showToast('Template Belanja Kost Rantau berhasil dimuat!');
     triggerHaptic('light');
@@ -1545,12 +1765,22 @@
     if (!remoteData) return;
     let hasChanges = false;
 
-    if (remoteData.cart && Array.isArray(remoteData.cart)) {
-      State.cart = remoteData.cart;
+    if (remoteData.storeLocation && remoteData.storeLocation !== State.storeLocation) {
+      State.storeLocation = remoteData.storeLocation;
       hasChanges = true;
     }
-    if (typeof remoteData.budgetLimit === 'number') {
-      State.budgetLimit = remoteData.budgetLimit;
+    if (remoteData.shoppingDate && remoteData.shoppingDate !== State.shoppingDate) {
+      State.shoppingDate = remoteData.shoppingDate;
+      hasChanges = true;
+    }
+    const incomingItems = remoteData.items || remoteData.cart;
+    if (incomingItems && Array.isArray(incomingItems)) {
+      State.cart = incomingItems;
+      hasChanges = true;
+    }
+    const incomingBudget = remoteData.walletLimit !== undefined ? remoteData.walletLimit : remoteData.budgetLimit;
+    if (typeof incomingBudget === 'number' && incomingBudget !== State.budgetLimit) {
+      State.budgetLimit = incomingBudget;
       hasChanges = true;
     }
     if (remoteData.history && Array.isArray(remoteData.history)) {
@@ -1561,15 +1791,18 @@
       State.catalog = remoteData.catalog;
       hasChanges = true;
     }
-    if (remoteData.baselineTitle) {
+    if (remoteData.baselineTitle && remoteData.baselineTitle !== State.baselineTitle) {
       State.baselineTitle = remoteData.baselineTitle;
       hasChanges = true;
     }
 
     if (hasChanges) {
+      // LocalStorage fallback sync (silent, without triggering echo write loop)
       try {
         localStorage.setItem('sg_cart', JSON.stringify(State.cart));
         localStorage.setItem('sg_budget', State.budgetLimit.toString());
+        localStorage.setItem('sg_store_location', State.storeLocation);
+        localStorage.setItem('sg_shopping_date', State.shoppingDate);
         localStorage.setItem('sg_history', JSON.stringify(State.history));
         localStorage.setItem('sg_catalog', JSON.stringify(State.catalog));
         localStorage.setItem('sg_baseline_title', State.baselineTitle);
@@ -1581,6 +1814,7 @@
       renderCartList();
       renderHistoryList();
       updateBudgetSafetyUI();
+      updateSessionMetaUI();
     }
   }
 
@@ -1592,6 +1826,7 @@
     const budgetInput = document.getElementById('inputBudgetLimit');
     if (budgetInput) budgetInput.value = State.budgetLimit;
 
+    updateSessionMetaUI();
     renderCartList();
     renderHistoryList();
     updateBudgetSafetyUI();
@@ -1603,9 +1838,16 @@
     // Connect to Firebase Cloud Realtime Sync
     function attachFirebase() {
       if (window.FirebaseService && typeof window.FirebaseService.listen === 'function') {
+        const totals = calculateCartTotals();
         window.FirebaseService.listen(handleRemoteFirebaseData, {
-          cart: State.cart,
+          storeLocation: State.storeLocation,
+          shoppingDate: State.shoppingDate,
+          walletLimit: State.budgetLimit,
           budgetLimit: State.budgetLimit,
+          items: State.cart,
+          cart: State.cart,
+          totalSpent: totals.totalNet,
+          totalSaved: totals.totalDiscountSavings,
           history: State.history,
           catalog: State.catalog,
           baselineTitle: State.baselineTitle

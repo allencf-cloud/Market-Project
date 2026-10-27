@@ -1,4 +1,4 @@
-/* ===================================================================
+﻿/* ===================================================================
    SMART GROCERY & BUDGET SAFETY TRACKER
    Visual Style: 1920s Industrial Soviet Constructivism / Russian Avant-Garde
    Inspiration: El Lissitzky, Rodchenko, Bauhaus Industrial Architecture
@@ -294,6 +294,86 @@ html, body {
 .icon-btn i, .icon-btn-secondary i {
   width: 18px;
   height: 18px;
+}
+
+/* ===================================================================
+   HEADER SESI BELANJA: LOKASI SUPERMARKET & TANGGAL (Mobile Ergonomics)
+   =================================================================== */
+.session-meta-strip {
+  display: flex;
+  gap: 6px;
+  background: var(--c-parchment-dark);
+  border: var(--border-thick);
+  box-shadow: var(--shadow-brutal-sm);
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  align-items: stretch;
+}
+
+.session-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.session-field-group.store-group {
+  flex: 1.5;
+  min-width: 0;
+}
+
+.session-field-group.date-group {
+  flex: 1.1;
+  min-width: 0;
+}
+
+.session-field-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--c-teal);
+  text-transform: uppercase;
+}
+
+.session-field-label .field-icon {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+.session-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-store-select,
+.session-date-input,
+.session-custom-input {
+  width: 100%;
+  font-family: var(--font-construct);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-charcoal);
+  background: var(--c-parchment);
+  border: 1.5px solid var(--c-charcoal);
+  padding: 4px 6px;
+  height: 32px;
+  box-shadow: 1px 1px 0px var(--c-charcoal);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.session-store-select:focus,
+.session-date-input:focus,
+.session-custom-input:focus {
+  outline: none;
+  border-color: var(--c-red);
+  background: #FFF;
 }
 
 /* ===================================================================
