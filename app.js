@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Smart Grocery & Budget Safety Tracker (PWA)
  * Arsitektur: Mobile PWA, Ramah Jempol, Native Look & Feel
  * Fitur: F-01 (Pencatatan), F-02 (Kuantitas Otomatis), F-03 (Diskon Bertingkat),
@@ -159,58 +159,6 @@
       }
     }
   };
-
-  // =========================================================================
-  // SESSION CONTEXT & DATE UTILITIES (Header Sesi Belanja)
-  // =========================================================================
-  function formatDateDisplay(dateStr) {
-    if (!dateStr) return '';
-    try {
-      const parts = dateStr.split('-');
-      if (parts.length === 3) {
-        const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-      }
-      return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-    } catch (e) {
-      return dateStr;
-    }
-  }
-
-  function updateSessionMetaUI() {
-    const storeSelect = document.getElementById('selectStoreLocation');
-    const customInput = document.getElementById('inputCustomStore');
-    const dateInput = document.getElementById('inputShoppingDate');
-    const receiptDate = document.getElementById('receiptDate');
-
-    if (storeSelect) {
-      let matched = false;
-      for (let i = 0; i < storeSelect.options.length; i++) {
-        if (storeSelect.options[i].value === State.storeLocation) {
-          storeSelect.selectedIndex = i;
-          matched = true;
-          break;
-        }
-      }
-      if (!matched && State.storeLocation) {
-        storeSelect.value = 'custom';
-        if (customInput) {
-          customInput.classList.remove('hidden');
-          customInput.value = State.storeLocation;
-        }
-      } else if (customInput && storeSelect.value !== 'custom') {
-        customInput.classList.add('hidden');
-      }
-    }
-
-    if (dateInput && State.shoppingDate) {
-      dateInput.value = State.shoppingDate;
-    }
-
-    if (receiptDate) {
-      receiptDate.textContent = ${State.storeLocation} // ;
-    }
-  }
 
   // =========================================================================
   // SESSION CONTEXT & DATE UTILITIES (Header Sesi Belanja)
@@ -1293,53 +1241,6 @@
         triggerHaptic('light');
       });
     });
-
-    // Header Sesi Belanja Event Listeners (Lokasi Supermarket & Tanggal)
-    const storeSelectEl = document.getElementById('selectStoreLocation');
-    const customStoreInputEl = document.getElementById('inputCustomStore');
-    const shoppingDateInputEl = document.getElementById('inputShoppingDate');
-
-    if (storeSelectEl) {
-      storeSelectEl.addEventListener('change', (e) => {
-        if (e.target.value === 'custom') {
-          if (customStoreInputEl) {
-            customStoreInputEl.classList.remove('hidden');
-            customStoreInputEl.focus();
-          }
-        } else {
-          if (customStoreInputEl) {
-            customStoreInputEl.classList.add('hidden');
-          }
-          State.storeLocation = e.target.value;
-          Storage.save(true);
-          updateSessionMetaUI();
-          showToast(Lokasi: , 'map-pin');
-        }
-      });
-    }
-
-    if (customStoreInputEl) {
-      let customDebounce = null;
-      customStoreInputEl.addEventListener('input', (e) => {
-        State.storeLocation = e.target.value.trim() || 'Lotte Mart Grocery - Puri Indah';
-        clearTimeout(customDebounce);
-        customDebounce = setTimeout(() => {
-          Storage.save(true);
-          updateSessionMetaUI();
-        }, 500);
-      });
-    }
-
-    if (shoppingDateInputEl) {
-      shoppingDateInputEl.addEventListener('change', (e) => {
-        if (e.target.value) {
-          State.shoppingDate = e.target.value;
-          Storage.save(true);
-          updateSessionMetaUI();
-          showToast(Tanggal: , 'calendar');
-        }
-      });
-    }
 
     // Header Sesi Belanja Event Listeners (Lokasi Supermarket & Tanggal)
     const storeSelectEl = document.getElementById('selectStoreLocation');
