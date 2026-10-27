@@ -1,6 +1,16 @@
 # Smart Grocery & Budget Safety Tracker (PWA)
 
+[![Firebase Hosting](https://img.shields.io/badge/Live_Demo-Firebase_Hosting-FFA000?style=for-the-badge&logo=firebase&logoColor=white)](https://groceryapp-cb4b9.web.app)
+[![GitHub Pages](https://img.shields.io/badge/Live_Demo-GitHub_Pages-24292E?style=for-the-badge&logo=github&logoColor=white)](https://allencf-cloud.github.io/Market-Project/)
+
 Aplikasi Web Mobile (Progressive Web App) bergaya Native App yang dirancang khusus untuk **siswa/anak rantau** saat berbelanja kebutuhan bulanan di supermarket sambil mendorong troli.
+
+---
+
+### 🌐 Tautan Aplikasi Live (Production Links)
+- **Firebase Hosting (Utama)**: [https://groceryapp-cb4b9.web.app](https://groceryapp-cb4b9.web.app)
+- **GitHub Pages (Mirror)**: [https://allencf-cloud.github.io/Market-Project/](https://allencf-cloud.github.io/Market-Project/)
+- **Repositori GitHub**: [https://github.com/allencf-cloud/Market-Project](https://github.com/allencf-cloud/Market-Project)
 
 ---
 
