@@ -14,5 +14,8 @@
     "mobile-app"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^13.1.0"
+  }
 }
