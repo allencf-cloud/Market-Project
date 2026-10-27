@@ -121,7 +121,7 @@ html, body {
   flex-shrink: 0;
   background: var(--c-parchment);
   border-bottom: var(--border-heavy);
-  padding: 10px 14px 10px;
+  padding: 6px 12px 6px;
   position: relative;
   z-index: 20;
 }
@@ -224,7 +224,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin: 6px 0 8px;
+  margin: 2px 0 6px;
 }
 
 .brand-badge {
@@ -305,8 +305,8 @@ html, body {
   background: var(--c-parchment-dark);
   border: var(--border-thick);
   box-shadow: var(--shadow-brutal-sm);
-  padding: 6px 8px;
-  margin-bottom: 8px;
+  padding: 4px 6px;
+  margin-bottom: 6px;
   align-items: stretch;
 }
 

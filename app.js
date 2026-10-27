@@ -239,7 +239,9 @@
     const iconEl = toast.querySelector('.toast-icon');
     if (msgEl) msgEl.textContent = message;
     if (iconEl) iconEl.setAttribute('data-lucide', icon);
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
 
     toast.classList.add('show');
     clearTimeout(toast._timeout);
@@ -661,7 +663,9 @@
     });
 
     container.innerHTML = itemsHtml;
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
     updateBudgetSafetyUI();
   }
 
@@ -917,7 +921,9 @@
     });
 
     container.innerHTML = historyHtml;
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
 
     // Stats
     const count = State.history.length;
@@ -1241,6 +1247,7 @@
         triggerHaptic('light');
       });
     });
+
 
     // Header Sesi Belanja Event Listeners (Lokasi Supermarket & Tanggal)
     const storeSelectEl = document.getElementById('selectStoreLocation');
@@ -1647,6 +1654,11 @@
       targetPane.classList.add('active');
     }
 
+    const checkoutDock = document.getElementById('floatingCheckoutDock');
+    if (checkoutDock) {
+      checkoutDock.style.display = (tabId === 'tabBelanja') ? 'flex' : 'none';
+    }
+
     if (tabId === 'tabRiwayat') {
       renderHistoryList();
     } else if (tabId === 'tabAnggaran') {
@@ -1732,8 +1744,8 @@
     renderHistoryList();
     updateBudgetSafetyUI();
 
-    if (window.lucide) {
-      lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
     }
 
     // Connect to Firebase Cloud Realtime Sync
