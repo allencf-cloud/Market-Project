@@ -26,7 +26,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=3.2.0">
+  <link rel="stylesheet" href="styles.css?v=3.3.0">
 </head>
 <body>
   <!-- App Container (Constrained to 430px max on Desktop, Edge-to-Edge on Mobile) -->
@@ -186,7 +186,6 @@
                 </button>
               </div>
             </div>
-          </div>
           </div>
         </section>
 
@@ -620,16 +619,16 @@
   </div>
 
   <!-- Firebase Cloud Integration Module -->
-  <script type="module" src="firebase-service.js?v=3.2.0"></script>
+  <script type="module" src="firebase-service.js?v=3.3.0"></script>
 
   <!-- Main Application Script -->
-  <script src="app.js?v=3.2.0"></script>
+  <script src="app.js?v=3.3.0"></script>
 
   <!-- Service Worker Registration for PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.2.0')
+        navigator.serviceWorker.register('./sw.js?v=3.3.0')
           .then((reg) => { reg.update(); console.log('PWA ServiceWorker registered & updated:', reg.scope); return reg; })
           .then((reg) => console.log('PWA ServiceWorker registered with scope:', reg.scope))
           .catch((err) => console.warn('PWA ServiceWorker registration failed:', err));
