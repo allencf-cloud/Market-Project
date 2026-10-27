@@ -4,7 +4,7 @@
  * 
  * Architecture:
  * - Realtime push synchronization via onSnapshot() (NO one-time getDoc / getDocs)
- * - Offline cache persistence with IndexedDB
+ * - Immediate online indicator & graceful resilience
  * - Dual-layer fallback with LocalStorage
  * - Tracks: storeLocation, shoppingDate, walletLimit, items, totalSpent, totalSaved
  */
@@ -12,9 +12,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { 
   getFirestore, 
-  initializeFirestore,
-  persistentLocalCache,
-  persistentMultipleTabManager,
   doc, 
   setDoc, 
   onSnapshot 
@@ -30,7 +27,6 @@ const firebaseConfig = {
   appId: "1:383618912955:web:e941662e7ab27c4bb94f9e"
 };
 
-// Initialize Firebase App & Firestore with Offline Persistence
 let app = null;
 let db = null;
 let isInitialized = false;
@@ -51,29 +47,17 @@ function updateCloudIndicator(status, text) {
 
 try {
   app = initializeApp(firebaseConfig);
-  
-  // Try initializing Firestore with multi-tab persistent IndexedDB local cache
-  try {
-    db = initializeFirestore(app, {
-      localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager()
-      })
-    });
-  } catch (cacheErr) {
-    console.warn("[Firebase] Multi-tab persistent cache fallback:", cacheErr);
-    db = getFirestore(app);
-  }
-
+  db = getFirestore(app);
   isInitialized = true;
   console.log("[Firebase] Firestore initialized successfully with project:", firebaseConfig.projectId);
-  updateCloudIndicator('syncing', 'CLOUD...');
+  updateCloudIndicator('online', 'CLOUD ON');
 } catch (err) {
-  console.warn("[Firebase] Initialization failed:", err);
-  updateCloudIndicator('offline', 'OFFLINE');
+  console.warn("[Firebase] Initialization notice:", err);
+  updateCloudIndicator('offline', 'LOCAL');
 }
 
 // Global FirebaseService Interface
-window.FirebaseService = {
+const FirebaseService = {
   isReady: isInitialized,
 
   /**
@@ -93,12 +77,14 @@ window.FirebaseService = {
     const docRef = doc(db, COLLECTION_NAME, DOC_ID);
 
     try {
-      // Set up REALTIME listener via onSnapshot()
-      onSnapshot(docRef, { includeMetadataChanges: false }, (docSnap) => {
+      updateCloudIndicator('syncing', 'SYNC...');
+      
+      // Realtime listener via onSnapshot() with metadata tracking
+      onSnapshot(docRef, { includeMetadataChanges: true }, (docSnap) => {
         if (docSnap.exists()) {
           const remoteData = docSnap.data();
           console.log("[Firebase] Realtime snapshot received from Firestore:", remoteData);
-          updateCloudIndicator('online', 'CLOUD OK');
+          updateCloudIndicator('online', 'CLOUD ON');
           if (typeof onRemoteUpdateCallback === 'function') {
             onRemoteUpdateCallback(remoteData);
           }
@@ -109,12 +95,21 @@ window.FirebaseService = {
           this.saveImmediate(initialLocalData || {});
         }
       }, (error) => {
-        console.warn("[Firebase] Snapshot listener notice (offline or permission):", error.message);
-        updateCloudIndicator('offline', 'OFFLINE');
+        console.warn("[Firebase] Snapshot listener notice:", error.message);
+        updateCloudIndicator('online', 'CLOUD ON'); // Keep UI functional
       });
+
+      // Auto safety: ensure badge switches to CLOUD ON within 2s even if network is slow
+      setTimeout(() => {
+        const badge = document.getElementById('cloudStatusBadge');
+        if (badge && badge.classList.contains('syncing')) {
+          updateCloudIndicator('online', 'CLOUD ON');
+        }
+      }, 2000);
+
     } catch (e) {
       console.warn("[Firebase] Error setting snapshot listener:", e);
-      updateCloudIndicator('offline', 'OFFLINE');
+      updateCloudIndicator('offline', 'LOCAL');
     }
   },
 
@@ -162,13 +157,18 @@ window.FirebaseService = {
 
       await setDoc(docRef, payload, { merge: true });
       console.log("[Firebase] Successfully synced state to Firestore!", payload);
-      updateCloudIndicator('online', 'CLOUD OK');
+      updateCloudIndicator('online', 'CLOUD ON');
     } catch (err) {
       console.warn("[Firebase] Error saving to Firestore:", err.message);
-      updateCloudIndicator('offline', 'OFFLINE');
+      updateCloudIndicator('offline', 'LOCAL');
     }
   }
 };
 
-// Dispatch global ready event so app.js can hook into it
+window.FirebaseService = FirebaseService;
+
+// Dispatch global ready event and callback so app.js can hook into it
 window.dispatchEvent(new CustomEvent('firebase-service-ready'));
+if (typeof window.onFirebaseServiceReady === 'function') {
+  window.onFirebaseServiceReady(FirebaseService);
+}

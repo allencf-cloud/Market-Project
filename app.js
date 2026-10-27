@@ -1772,6 +1772,7 @@
       attachFirebase();
     } else {
       window.addEventListener('firebase-service-ready', attachFirebase, { once: true });
+      window.onFirebaseServiceReady = attachFirebase;
     }
   }
 

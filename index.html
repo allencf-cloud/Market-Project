@@ -26,7 +26,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=3.0.0">
+  <link rel="stylesheet" href="styles.css?v=3.2.0">
 </head>
 <body>
   <!-- App Container (Constrained to 430px max on Desktop, Edge-to-Edge on Mobile) -->
@@ -187,18 +187,6 @@
               </div>
             </div>
           </div>
-
-          
-            <div class="dock-actions">
-              <button class="dock-btn-add" id="btnOpenAddModal">
-                <i data-lucide="plus-circle"></i>
-                <span>Tambah Item</span>
-              </button>
-              <button class="dock-btn-checkout" id="btnFinishShopping" title="Selesai Belanja & Simpan">
-                <i data-lucide="check-circle-2"></i>
-                <span>Selesai</span>
-              </button>
-            </div>
           </div>
         </section>
 
@@ -299,16 +287,27 @@
         </section>
       </main>
 
-      <!-- Bottom Floating Navigation Bar (Mobile Native Touch-friendly) -->
       <!-- Floating Trolley Action Bar (Above Bottom Nav) -->
-          <div class="floating-checkout-dock" id="floatingCheckoutDock">
-            <div class="dock-summary">
-              <div class="dock-qty">
-                <span id="dockItemCount">0</span> barang di keranjang
-              </div>
-              <div class="dock-total" id="dockTotalAmount">Rp 0</div>
-            </div>
+      <div class="floating-checkout-dock" id="floatingCheckoutDock">
+        <div class="dock-summary">
+          <div class="dock-qty">
+            <span id="dockItemCount">0</span> barang di keranjang
+          </div>
+          <div class="dock-total" id="dockTotalAmount">Rp 0</div>
+        </div>
+        <div class="dock-actions">
+          <button class="dock-btn-add" id="btnOpenAddModal">
+            <i data-lucide="plus-circle"></i>
+            <span>Tambah Item</span>
+          </button>
+          <button class="dock-btn-checkout" id="btnFinishShopping" title="Selesai Belanja & Simpan">
+            <i data-lucide="check-circle-2"></i>
+            <span>Selesai</span>
+          </button>
+        </div>
+      </div>
 
+      <!-- Bottom Floating Navigation Bar (Mobile Native Touch-friendly) -->
       <nav class="bottom-nav-bar" id="bottomNavBar" aria-label="Navigasi Utama">
         <button class="nav-tab-btn active" data-tab="tabBelanja" id="navTabBelanja">
           <div class="nav-icon-wrap">
@@ -621,16 +620,16 @@
   </div>
 
   <!-- Firebase Cloud Integration Module -->
-  <script type="module" src="firebase-service.js?v=3.0.0"></script>
+  <script type="module" src="firebase-service.js?v=3.2.0"></script>
 
   <!-- Main Application Script -->
-  <script src="app.js?v=3.0.0"></script>
+  <script src="app.js?v=3.2.0"></script>
 
   <!-- Service Worker Registration for PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.0.0')
+        navigator.serviceWorker.register('./sw.js?v=3.2.0')
           .then((reg) => { reg.update(); console.log('PWA ServiceWorker registered & updated:', reg.scope); return reg; })
           .then((reg) => console.log('PWA ServiceWorker registered with scope:', reg.scope))
           .catch((err) => console.warn('PWA ServiceWorker registration failed:', err));
