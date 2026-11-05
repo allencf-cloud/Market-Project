@@ -26,7 +26,9 @@
     'rinso deterjen cair': { name: 'Rinso Deterjen Cair 750ml', category: 'Mandi & Cuci', unit: 'pack', price: 21500, month: 'September 2026' },
     'sunlight pencuci piring': { name: 'Sunlight Jeruk Nipis 700ml', category: 'Mandi & Cuci', unit: 'pack', price: 14000, month: 'September 2026' },
     'kopi instan kapal api': { name: 'Kopi Kapal Api Spesial Mix (10s)', category: 'Camilan & Minuman', unit: 'pack', price: 13500, month: 'September 2026' },
-    'roti tawar gandum': { name: 'Roti Tawar Gandum', category: 'Camilan & Minuman', unit: 'pack', price: 16000, month: 'September 2026' }
+    'roti tawar gandum': { name: 'Roti Tawar Gandum', category: 'Camilan & Minuman', unit: 'pack', price: 16000, month: 'September 2026' },
+    'wajan': { name: 'Wajan', category: 'Lainnya', unit: 'pcs', price: 45000, month: 'September 2026' },
+    'sabun cuci': { name: 'Sabun Cuci', category: 'Mandi & Cuci', unit: 'pack', price: 12000, month: 'September 2026' }
   };
 
   const DEFAULT_HISTORY_PRESET = [
@@ -111,7 +113,7 @@
         if (savedHistory) State.history = JSON.parse(savedHistory);
         else State.history = [...DEFAULT_HISTORY_PRESET];
 
-        if (savedCatalog) State.catalog = JSON.parse(savedCatalog);
+        if (savedCatalog) State.catalog = { ...DEFAULT_BASELINE_CATALOG, ...JSON.parse(savedCatalog) };
         else State.catalog = { ...DEFAULT_BASELINE_CATALOG };
 
         if (savedBaselineTitle) State.baselineTitle = savedBaselineTitle;
@@ -1701,7 +1703,7 @@
       hasChanges = true;
     }
     if (remoteData.catalog && typeof remoteData.catalog === 'object') {
-      State.catalog = remoteData.catalog;
+      State.catalog = { ...DEFAULT_BASELINE_CATALOG, ...remoteData.catalog };
       hasChanges = true;
     }
     if (remoteData.baselineTitle && remoteData.baselineTitle !== State.baselineTitle) {
