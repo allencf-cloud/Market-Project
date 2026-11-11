@@ -2,6 +2,13 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Pastikan pengunjung dari GitHub Pages langsung diarahkan ke live production Firebase Hosting terbaru
+    if (window.location.hostname.includes('github.io')) {
+      var targetPath = window.location.pathname.replace(/^\/[^\/]+/, '');
+      window.location.replace('https://groceryapp-cb4b9.web.app' + (targetPath || '/') + window.location.search + window.location.hash);
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#232425">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,7 +33,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=3.4.0">
+  <link rel="stylesheet" href="styles.css?v=3.4.1">
 </head>
 <body>
   <!-- App Container (Constrained to 430px max on Desktop, Edge-to-Edge on Mobile) -->
@@ -619,16 +626,16 @@
   </div>
 
   <!-- Firebase Cloud Integration Module -->
-  <script type="module" src="firebase-service.js?v=3.4.0"></script>
+  <script type="module" src="firebase-service.js?v=3.4.1"></script>
 
   <!-- Main Application Script -->
-  <script src="app.js?v=3.4.0"></script>
+  <script src="app.js?v=3.4.1"></script>
 
   <!-- Service Worker Registration for PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.4.0')
+        navigator.serviceWorker.register('./sw.js?v=3.4.1')
           .then((reg) => { reg.update(); console.log('PWA ServiceWorker registered & updated:', reg.scope); return reg; })
           .then((reg) => console.log('PWA ServiceWorker registered with scope:', reg.scope))
           .catch((err) => console.warn('PWA ServiceWorker registration failed:', err));
