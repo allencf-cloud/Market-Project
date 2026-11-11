@@ -35,24 +35,24 @@ Aplikasi Web Mobile (Progressive Web App) bergaya Native App yang dirancang khus
 
 ---
 
-## ✅ Implementasi Kebutuhan Fungsional (SRS Checklist)
+## ✅ Implementasi Kebutuhan Fungsional
 
-| Kode | Kebutuhan SRS | Implementasi pada Aplikasi |
+| Fitur | Kebutuhan Sistem | Implementasi pada Aplikasi |
 |---|---|---|
-| **F-01** | **Pencatatan Item Belanja** | Form input modal bottom-sheet mencatat nama produk (dengan *autocomplete* riwayat), kategori (Bahan Pokok, Lauk & Protein, Sayur/Buah, Bumbu/Instan, Camilan, Mandi/Cuci, Lainnya), pilihan satuan (`pcs`, `pack`, `kg`, `liter`), kuantitas, dan harga satuan. |
-| **F-02** | **Perhitungan Kuantitas Otomatis** | Realtime subtotal: $\text{Total Item} = (\text{Harga Bersih}) \times \text{Kuantitas}$. Update otomatis ketika kuantitas diubah langsung di troli melalui tombol stepper (`+` / `-`). |
-| **F-03** | **Kalkulator Diskon Bertingkat** | Menghitung diskon berurutan sesuai kaidah matematika retail: $P_1 = P \times (1 - d_1/100)$, $P_2 = P_1 \times (1 - d_2/100)$. Terdapat preset promo supermarket (50%+20%, 30%+10%, dll.) serta rincian hemat transparan (*Diskon Efektif* & nominal hemat). |
-| **F-04** | **Komparator Harga Realtime** | Membandingkan harga satuan yang sedang diinput/dalam troli terhadap harga belanja bulan sebelumnya: <br>• **$\uparrow$ Panah Merah**: Harga naik (beserta nominal selisih & % kenaikan)<br>• **$\downarrow$ Panah Hijau**: Harga turun / lebih murah<br>• **$=$ Abu-abu**: Harga stabil sama dengan bulan lalu<br>• **$\star$ Ungu**: Item baru (belum ada riwayat) |
-| **F-05** | **Pengendali Anggaran (Budget Safety)** | Input batas maksimal uang belanja (budget). Kartu pemantau di bagian atas terus memperbarui rasio pengeluaran: <br>• **Aman (Hijau)**: < 75% budget<br>• **Waspada (Kuning)**: 75% - 90% budget<br>• **Kritis (Merah)**: 90% - 100% budget<br>• **Over Budget (Merah Berkedip & Haptic)**: Melebihi anggaran dengan peringatan cerdas dompet anak rantau. |
-| **F-06** | **Riwayat & Database Belanja** | Penyimpanan terstruktur di `localStorage`. Saat belanja selesai, transaksi diarsip per tanggal & bulan. Sesi riwayat dapat dimuat kembali sebagai *template* atau ditetapkan sebagai basis komparasi harga (F-04) untuk bulan berikutnya. Terdapat fitur ekspor cadangan JSON. |
+| **Pencatatan Item Belanja** | Pencatatan Produk | Form input modal bottom-sheet mencatat nama produk (dengan *autocomplete* riwayat & 500+ katalog supermarket), kategori (Bahan Pokok, Lauk & Protein, Sayur/Buah, Bumbu/Instan, Camilan, Mandi/Cuci, Lainnya), pilihan satuan (`pcs`, `pack`, `kg`, `liter`), kuantitas, dan harga satuan. |
+| **Perhitungan Kuantitas Otomatis** | Perhitungan Realtime | Realtime subtotal: $\text{Total Item} = (\text{Harga Bersih}) \times \text{Kuantitas}$. Update otomatis ketika kuantitas diubah langsung di troli melalui tombol stepper (`+` / `-`). |
+| **Kalkulator Diskon Bertingkat** | Kalkulasi Diskon | Menghitung diskon berurutan sesuai kaidah matematika retail: $P_1 = P \times (1 - d_1/100)$, $P_2 = P_1 \times (1 - d_2/100)$. Terdapat preset promo supermarket (50%+20%, 30%+10%, dll.) serta rincian hemat transparan (*Diskon Efektif* & nominal hemat). |
+| **Komparator Harga Realtime** | Pembanding Harga | Membandingkan harga satuan yang sedang diinput/dalam troli terhadap harga belanja bulan sebelumnya: <br>• **$\uparrow$ Panah Merah**: Harga naik (beserta nominal selisih & % kenaikan)<br>• **$\downarrow$ Panah Hijau**: Harga turun / lebih murah<br>• **$=$ Abu-abu**: Harga stabil sama dengan bulan lalu<br>• **$\star$ Ungu**: Item baru (belum ada riwayat) |
+| **Pengendali Anggaran (Budget Safety)** | Monitoring Budget | Input batas maksimal uang belanja (budget). Kartu pemantau di bagian atas terus memperbarui rasio pengeluaran: <br>• **Aman (Hijau)**: < 75% budget<br>• **Waspada (Kuning)**: 75% - 90% budget<br>• **Kritis (Merah)**: 90% - 100% budget<br>• **Over Budget (Merah Berkedip & Haptic)**: Melebihi anggaran dengan peringatan cerdas dompet anak rantau. |
+| **Riwayat & Database Belanja** | Penyimpanan Terstruktur | Penyimpanan terstruktur di `localStorage`. Saat belanja selesai, transaksi diarsip per tanggal & bulan. Sesi riwayat dapat dimuat kembali sebagai *template* atau ditetapkan sebagai basis komparasi harga untuk bulan berikutnya. Terdapat fitur ekspor cadangan JSON. |
 
 ## ☁️ Integrasi Firebase Cloud (Firestore)
 
 Aplikasi telah terhubung ke **Firebase Cloud Firestore** dengan arsitektur **Hybrid Sync (Cloud + Offline Cache)**:
 - **`cart`**: Menyimpan daftar barang troli yang sedang aktif secara realtime.
 - **`budgetLimit`**: Batas maksimal anggaran belanja bulanan.
-- **`catalog`**: Database harga acuan bulan lalu untuk fitur Komparator Harga Realtime (F-04).
-- **`history`**: Riwayat transaksi struk belanja bulanan (F-06).
+- **`catalog`**: Database harga acuan bulan lalu untuk fitur Komparator Harga Realtime.
+- **`history`**: Riwayat transaksi struk belanja bulanan.
 - **Offline Resilience**: Jika koneksi terputus saat berada di dalam supermarket, data tetap tersimpan di `localStorage` dan otomatis disinkronkan ke Firebase begitu online.
 
 ---

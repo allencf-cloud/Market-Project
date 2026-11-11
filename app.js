@@ -1,35 +1,26 @@
 /**
  * Smart Grocery & Budget Safety Tracker (PWA)
  * Arsitektur: Mobile PWA, Ramah Jempol, Native Look & Feel
- * Fitur: F-01 (Pencatatan), F-02 (Kuantitas Otomatis), F-03 (Diskon Bertingkat),
- *        F-04 (Komparator Harga Realtime), F-05 (Pengendali Anggaran), F-06 (Riwayat & Database)
+ * Fitur: Pencatatan, Kuantitas Otomatis, Diskon Bertingkat,
+ *        Komparator Harga Realtime, Pengendali Anggaran, Riwayat & Database
  */
 
 (function () {
   'use strict';
 
   // =========================================================================
-  // DEFAULT MASTER CATALOG / PREVIOUS MONTH DATASET (Untuk Demo F-04 & F-06)
+  // DEFAULT MASTER CATALOG / PREVIOUS MONTH DATASET
   // =========================================================================
-  const DEFAULT_BASELINE_CATALOG = {
-    'beras ramos 5kg': { name: 'Beras Ramos 5kg', category: 'Bahan Pokok', unit: 'pack', price: 72000, month: 'September 2026' },
-    'minyak goreng 2l': { name: 'Minyak Goreng 2L', category: 'Bahan Pokok', unit: 'pack', price: 34000, month: 'September 2026' },
-    'telur ayam negeri': { name: 'Telur Ayam Negeri', category: 'Lauk & Protein', unit: 'kg', price: 28500, month: 'September 2026' },
-    'dada ayam fillet': { name: 'Dada Ayam Fillet', category: 'Lauk & Protein', unit: 'kg', price: 46000, month: 'September 2026' },
-    'sayur bayam': { name: 'Sayur Bayam', category: 'Sayur & Buah', unit: 'pack', price: 3500, month: 'September 2026' },
-    'tempe mendoan': { name: 'Tempe Mendoan', category: 'Lauk & Protein', unit: 'pcs', price: 5000, month: 'September 2026' },
-    'indomie goreng': { name: 'Indomie Goreng (Isi 5)', category: 'Bumbu & Instan', unit: 'pack', price: 15500, month: 'September 2026' },
-    'bawang merah': { name: 'Bawang Merah', category: 'Bahan Pokok', unit: 'kg', price: 35000, month: 'September 2026' },
-    'bawang putih': { name: 'Bawang Putih', category: 'Bahan Pokok', unit: 'kg', price: 38000, month: 'September 2026' },
-    'susu uht 1 liter': { name: 'Susu UHT Full Cream 1L', category: 'Camilan & Minuman', unit: 'liter', price: 19500, month: 'September 2026' },
-    'sabun mandi lifebuoy': { name: 'Sabun Mandi Lifebuoy (4x)', category: 'Mandi & Cuci', unit: 'pack', price: 18000, month: 'September 2026' },
-    'rinso deterjen cair': { name: 'Rinso Deterjen Cair 750ml', category: 'Mandi & Cuci', unit: 'pack', price: 21500, month: 'September 2026' },
-    'sunlight pencuci piring': { name: 'Sunlight Jeruk Nipis 700ml', category: 'Mandi & Cuci', unit: 'pack', price: 14000, month: 'September 2026' },
-    'kopi instan kapal api': { name: 'Kopi Kapal Api Spesial Mix (10s)', category: 'Camilan & Minuman', unit: 'pack', price: 13500, month: 'September 2026' },
-    'roti tawar gandum': { name: 'Roti Tawar Gandum', category: 'Camilan & Minuman', unit: 'pack', price: 16000, month: 'September 2026' },
-    'wajan': { name: 'Wajan', category: 'Lainnya', unit: 'pcs', price: 45000, month: 'September 2026' },
-    'sabun cuci': { name: 'Sabun Cuci', category: 'Mandi & Cuci', unit: 'pack', price: 12000, month: 'September 2026' }
-  };
+  const DEFAULT_BASELINE_CATALOG = (typeof window !== 'undefined' && window.MASTER_SUPERMARKET_CATALOG && Object.keys(window.MASTER_SUPERMARKET_CATALOG).length > 0)
+    ? window.MASTER_SUPERMARKET_CATALOG
+    : {
+        'beras rojolele 5kg': { name: 'Beras Rojolele 5kg', category: 'Bahan Pokok', unit: 'pack', price: 74000, month: 'September 2026' },
+        'beras ramos 5kg': { name: 'Beras Ramos 5kg', category: 'Bahan Pokok', unit: 'pack', price: 72000, month: 'September 2026' },
+        'minyak goreng 2l': { name: 'Minyak Goreng 2L', category: 'Bahan Pokok', unit: 'pack', price: 34000, month: 'September 2026' },
+        'telur ayam negeri': { name: 'Telur Ayam Negeri', category: 'Lauk & Protein', unit: 'kg', price: 28500, month: 'September 2026' },
+        'wajan': { name: 'Wajan', category: 'Lainnya', unit: 'pcs', price: 45000, month: 'September 2026' },
+        'sabun cuci': { name: 'Sabun Cuci', category: 'Mandi & Cuci', unit: 'pack', price: 12000, month: 'September 2026' }
+      };
 
   const DEFAULT_HISTORY_PRESET = [
     {
@@ -93,7 +84,7 @@
   };
 
   // =========================================================================
-  // LOCAL STORAGE PERSISTENCE (SRS F-06)
+  // LOCAL STORAGE PERSISTENCE
   // =========================================================================
   const Storage = {
     load() {
@@ -253,7 +244,7 @@
   }
 
   // =========================================================================
-  // F-03: KALKULATOR DISKON BERTINGKAT ENGINE
+  // KALKULATOR DISKON BERTINGKAT ENGINE
   // P_1 = P * (1 - d1/100)
   // P_2 = P_1 * (1 - d2/100)
   // Total hemat = P - P_2
@@ -286,7 +277,7 @@
   }
 
   // =========================================================================
-  // F-04: KOMPARATOR HARGA REALTIME ENGINE
+  // KOMPARATOR HARGA REALTIME ENGINE
   // Bandingkan harga sekarang vs bulan lalu
   // =========================================================================
   function comparePriceWithPrevious(productName, currentUnitPrice) {
@@ -361,7 +352,7 @@
   }
 
   // =========================================================================
-  // F-02 & F-05: PENGENDALI ANGGARAN & KALKULASI TOTAL REALTIME
+  // PENGENDALI ANGGARAN & KALKULASI TOTAL REALTIME
   // =========================================================================
   function calculateCartTotals() {
     let totalGross = 0;
@@ -447,7 +438,7 @@
     const cappedPercent = Math.min(100, Math.max(0, totals.budgetPercent));
     progressFill.style.width = `${cappedPercent}%`;
 
-    // Safety Zones Determination (SRS F-05)
+    // Safety Zones Determination
     // 0 - 75%: Aman (Green)
     // 75% - 90%: Waspada (Amber)
     // > 90% & Overbudget: Kritis / Bahaya (Red)
@@ -537,17 +528,46 @@
   // =========================================================================
   function renderCartList() {
     const container = document.getElementById('cartItemsContainer');
-    const emptyState = document.getElementById('emptyCartState');
+    if (!container) return;
+
+    // Toggle clear cart button
+    const btnClearCart = document.getElementById('btnClearCart');
+    if (btnClearCart) {
+      btnClearCart.style.display = State.cart.length > 0 ? 'inline-flex' : 'none';
+    }
 
     if (State.cart.length === 0) {
-      if (emptyState) emptyState.style.display = 'flex';
-      container.innerHTML = '';
-      container.appendChild(emptyState);
+      container.innerHTML = `
+        <div class="empty-cart-state" id="emptyCartState">
+          <div class="empty-icon-wrap">
+            <i data-lucide="shopping-cart"></i>
+          </div>
+          <h3>Troli Belanja Masih Kosong</h3>
+          <p>Keranjang masih kosong, tambahkan kebutuhan pokok pertamamu</p>
+          <div class="empty-actions">
+            <button class="btn-primary-mobile" id="btnEmptyAdd">
+              <i data-lucide="plus"></i> Tambah Item Pertama
+            </button>
+            <button class="btn-secondary-mobile" id="btnLoadSampleData">
+              <i data-lucide="sparkles"></i> Muat Template Belanja Kost
+            </button>
+          </div>
+        </div>
+      `;
+      const btnEmptyAdd = document.getElementById('btnEmptyAdd');
+      if (btnEmptyAdd) {
+        btnEmptyAdd.onclick = () => itemModal.open();
+      }
+      const btnLoadSample = document.getElementById('btnLoadSampleData');
+      if (btnLoadSample) {
+        btnLoadSample.onclick = loadKostTemplateData;
+      }
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
       updateBudgetSafetyUI();
       return;
     }
-
-    if (emptyState) emptyState.style.display = 'none';
 
     // Filter by selected category
     const filtered = State.cart.filter((item) => {
@@ -574,7 +594,7 @@
       const itemSubtotal = discCalc.priceFinal * item.qty;
       const serialNum = (idx + 1).toString().padStart(3, '0');
 
-      // Build Discount Badge HTML if discounted (F-03)
+      // Build Discount Badge HTML if discounted
       let discountBadgeHtml = '';
       if (item.disc1 > 0 || item.disc2 > 0) {
         let discLabel = `${item.disc1}%`;
@@ -619,7 +639,7 @@
                   <span class="unit-price-val">${formatRp(discCalc.priceFinal)} / ${item.unit}</span>
                   ${discCalc.totalDiscountAmount > 0 ? `<s class="strike-original">${formatRp(item.unitPrice)}</s>` : ''}
                   
-                  <!-- F-04 Realtime Price Comparison Tag -->
+                  <!-- Realtime Price Comparison Tag -->
                   <span class="price-comparator-tag ${comp.badgeClass}" title="${comp.description}">
                     ${comp.label}
                   </span>
@@ -638,10 +658,10 @@
             </div>
           </div>
 
-          <!-- Discount Info (F-03) -->
+          <!-- Discount Info -->
           ${discountBadgeHtml}
 
-          <!-- Bottom Stepper & Subtotal Row (F-02 Realtime) -->
+          <!-- Bottom Stepper & Subtotal Row (Realtime) -->
           <div class="card-bottom-row">
             <!-- Mobile Friendly Stepper -->
             <div class="item-card-stepper">
@@ -682,7 +702,7 @@
   }
 
   // =========================================================================
-  // F-01, F-02, F-03: MODAL ADD/EDIT ITEM BOTTOM SHEET LOGIC
+  // MODAL ADD/EDIT ITEM BOTTOM SHEET LOGIC
   // =========================================================================
   const itemModal = {
     backdrop: document.getElementById('itemModalBackdrop'),
@@ -700,14 +720,14 @@
     disc1Input: document.getElementById('formDisc1'),
     disc2Input: document.getElementById('formDisc2'),
 
-    // F-04 form indicator
+    // Form indicator
     compareBadge: document.getElementById('formCompareBadge'),
     compareIcon: document.getElementById('formCompareIcon'),
     compareText: document.getElementById('formCompareText'),
     pastPriceNotice: document.getElementById('formPastPriceNotice'),
     pastPriceText: document.getElementById('formPastPriceText'),
 
-    // F-03 breakdown elements
+    // Breakdown elements
     discountBody: document.getElementById('discountBody'),
     discSummarySub: document.getElementById('discSummarySub'),
     calcPriceOriginal: document.getElementById('calcPriceOriginal'),
@@ -793,7 +813,7 @@
       const disc1 = parseFloat(this.disc1Input.value) || 0;
       const disc2 = parseFloat(this.disc2Input.value) || 0;
 
-      // F-03 Tiered Calculation
+      // Tiered Calculation
       const calc = calculateTieredDiscount(unitPrice, disc1, disc2);
       const subtotal = calc.priceFinal * qty;
 
@@ -817,11 +837,11 @@
       this.calcStep1Row.style.display = disc1 > 0 ? 'flex' : 'none';
       this.calcStep2Row.style.display = disc2 > 0 ? 'flex' : 'none';
 
-      // Subtotal Preview (F-02)
+      // Subtotal Preview
       this.subtotalFormula.textContent = `${qty} ${unit} × ${formatRp(calc.priceFinal)}`;
       this.subtotalAmount.textContent = formatRp(subtotal);
 
-      // F-04 Realtime Price Comparison Preview in Form
+      // Realtime Price Comparison Preview in Form
       if (name && unitPrice > 0) {
         const comp = comparePriceWithPrevious(name, unitPrice);
         this.compareBadge.className = `compare-badge-mini ${comp.badgeClass}`;
@@ -854,7 +874,7 @@
   }
 
   // =========================================================================
-  // F-06: RIWAYAT & DATABASE BELANJA ACTIONS
+  // RIWAYAT & DATABASE BELANJA ACTIONS
   // =========================================================================
   function renderHistoryList() {
     const container = document.getElementById('historyListContainer');
@@ -915,7 +935,7 @@
               <i data-lucide="shopping-cart"></i> Pakai Template Ini
             </button>
             <button class="btn-secondary-sm btn-set-baseline" data-id="${sess.id}">
-              <i data-lucide="git-compare"></i> Set Pembanding (F-04)
+              <i data-lucide="git-compare"></i> Set Pembanding
             </button>
           </div>
         </div>
@@ -1000,7 +1020,7 @@
       // Push to history
       State.history.unshift(newHistorySession);
 
-      // If user checks "Jadikan basis komparasi harga", update master catalog (F-04, F-06)
+      // If user checks "Jadikan basis komparasi harga", update master catalog
       if (this.checkBaseline.checked) {
         State.cart.forEach((it) => {
           const key = sanitizeKey(it.name);
@@ -1341,6 +1361,28 @@
       }
     });
 
+    // Clear All Items Button
+    const btnClearCart = document.getElementById('btnClearCart');
+    if (btnClearCart) {
+      btnClearCart.addEventListener('click', clearAllCart);
+    }
+
+    // Name input change / datalist pick listener
+    itemModal.nameInput.addEventListener('change', () => {
+      const val = itemModal.nameInput.value.trim().toLowerCase();
+      const match = State.catalog[val] || Object.values(State.catalog).find((it) => it.name.toLowerCase() === val);
+      if (match) {
+        itemModal.nameInput.value = match.name;
+        itemModal.catInput.value = match.category;
+        itemModal.unitInput.value = match.unit;
+        itemModal.unitPriceInput.value = match.price;
+        updateChipSelection('#formCategoryChips .form-chip', match.category);
+        updateChipSelection('#unitSelector .unit-btn', match.unit, 'data-unit');
+        itemModal.recalculateForm();
+        triggerHaptic('light');
+      }
+    });
+
     // Finish Shopping Modal Trigger
     document.getElementById('btnFinishShopping').addEventListener('click', () => {
       finishModal.open();
@@ -1378,7 +1420,7 @@
         return;
       }
 
-      // Set session as F-04 comparator baseline
+      // Set session as comparator baseline
       const btnSetBaseline = e.target.closest('.btn-set-baseline');
       if (btnSetBaseline) {
         const id = btnSetBaseline.getAttribute('data-id');
@@ -1424,7 +1466,7 @@
     });
   }
 
-  // Handle Autocomplete Suggestions (F-01, F-04)
+  // Handle Autocomplete Suggestions
   function handleNameInputAutocomplete() {
     const val = itemModal.nameInput.value.trim().toLowerCase();
     const suggestionsEl = itemModal.suggestions;
@@ -1442,7 +1484,7 @@
     }
 
     let html = '';
-    matchedKeys.slice(0, 4).forEach((k) => {
+    matchedKeys.slice(0, 8).forEach((k) => {
       const item = State.catalog[k];
       html += `
         <div class="autocomplete-item" data-key="${k}">
@@ -1476,7 +1518,7 @@
     });
   }
 
-  // Save Item (F-01)
+  // Save Item
   function saveItemFromForm() {
     const id = itemModal.idInput.value;
     const name = itemModal.nameInput.value.trim();
@@ -1535,7 +1577,7 @@
     triggerHaptic('light');
   }
 
-  // Modify Item Qty directly from list (F-02 Realtime)
+  // Modify Item Qty directly from list (Realtime)
   function modifyItemQty(id, delta) {
     const item = State.cart.find((it) => it.id === id);
     if (!item) return;
@@ -1549,6 +1591,7 @@
     item.qty = Math.round(newQty * 10) / 10;
     Storage.save(true);
     renderCartList();
+    updateBudgetSafetyUI();
     triggerHaptic('light');
   }
 
@@ -1560,8 +1603,24 @@
     State.cart = State.cart.filter((it) => it.id !== id);
     Storage.save(true);
     renderCartList();
+    updateBudgetSafetyUI();
     showToast(`"${itemName}" dihapus dari keranjang`, 'trash-2');
     triggerHaptic('light');
+  }
+
+  // Clear All Cart Items (Sekali Pencet)
+  function clearAllCart() {
+    if (State.cart.length === 0) {
+      showToast('Keranjang sudah kosong', 'info');
+      return;
+    }
+    const count = State.cart.length;
+    State.cart = [];
+    Storage.save(true);
+    renderCartList();
+    updateBudgetSafetyUI();
+    showToast(`${count} item dihapus. Keranjang kosong`, 'trash-2');
+    triggerHaptic('medium');
   }
 
   // Load Preset Template Belanja Kost
@@ -1573,7 +1632,7 @@
         category: 'Bahan Pokok',
         unit: 'pack',
         qty: 1,
-        unitPrice: 75000, // Naik dari 72rb bulan lalu (F-04 ↑)
+        unitPrice: 75000, // Naik dari 72rb bulan lalu (↑)
         disc1: 0,
         disc2: 0
       },
@@ -1583,7 +1642,7 @@
         category: 'Bahan Pokok',
         unit: 'pack',
         qty: 1,
-        unitPrice: 32500, // Turun dari 34rb bulan lalu (F-04 ↓)
+        unitPrice: 32500, // Turun dari 34rb bulan lalu (↓)
         disc1: 0,
         disc2: 0
       },
@@ -1593,7 +1652,7 @@
         category: 'Lauk & Protein',
         unit: 'kg',
         qty: 1.5,
-        unitPrice: 28500, // Stabil sama dengan bulan lalu (F-04 =)
+        unitPrice: 28500, // Stabil sama dengan bulan lalu (=)
         disc1: 0,
         disc2: 0
       },
@@ -1603,7 +1662,7 @@
         category: 'Bumbu & Instan',
         unit: 'pack',
         qty: 2,
-        unitPrice: 16000, // Diskon bertingkat 20% + 10% (F-03)
+        unitPrice: 16000, // Diskon bertingkat 20% + 10%
         disc1: 20,
         disc2: 10
       },
@@ -1613,13 +1672,13 @@
         category: 'Mandi & Cuci',
         unit: 'pack',
         qty: 1,
-        unitPrice: 24000, // Diskon 50% + 20% promo cuci gudang! (F-03)
+        unitPrice: 24000, // Diskon 50% + 20% promo cuci gudang!
         disc1: 50,
         disc2: 20
       },
       {
         id: 'item-demo-6',
-        name: 'Biskuit Khong Guan Mini', // Item baru belum pernah beli (F-04 ★)
+        name: 'Biskuit Khong Guan Mini', // Item baru belum pernah beli (★)
         category: 'Camilan & Minuman',
         unit: 'pcs',
         qty: 1,
@@ -1726,11 +1785,27 @@
       const budgetInput = document.getElementById('inputBudgetLimit');
       if (budgetInput) budgetInput.value = State.budgetLimit;
 
+      populateCatalogDatalist();
       renderCartList();
       renderHistoryList();
       updateBudgetSafetyUI();
       updateSessionMetaUI();
     }
+  }
+
+  function populateCatalogDatalist() {
+    const dl = document.getElementById('catalogDatalist');
+    if (!dl) return;
+    dl.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    Object.keys(State.catalog).forEach((key) => {
+      const item = State.catalog[key];
+      const opt = document.createElement('option');
+      opt.value = item.name;
+      opt.label = `${formatRp(item.price)} (${item.category})`;
+      frag.appendChild(opt);
+    });
+    dl.appendChild(frag);
   }
 
   function init() {
@@ -1741,6 +1816,7 @@
     const budgetInput = document.getElementById('inputBudgetLimit');
     if (budgetInput) budgetInput.value = State.budgetLimit;
 
+    populateCatalogDatalist();
     updateSessionMetaUI();
     renderCartList();
     renderHistoryList();

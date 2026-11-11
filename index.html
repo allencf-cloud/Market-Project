@@ -33,7 +33,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=3.4.1">
+  <link rel="stylesheet" href="styles.css?v=3.4.2">
 </head>
 <body>
   <!-- App Container (Constrained to 430px max on Desktop, Edge-to-Edge on Mobile) -->
@@ -175,6 +175,14 @@
             </div>
           </div>
 
+          <!-- Quick Cart Management Bar (Clear All Button) -->
+          <div class="cart-toolbar-row" id="cartToolbarRow">
+            <span class="toolbar-label">Troli Berjalan</span>
+            <button type="button" class="btn-clear-cart" id="btnClearCart" title="Hapus semua barang dari troli" style="display: none;">
+              <i data-lucide="trash-2"></i> Kosongkan Troli
+            </button>
+          </div>
+
           <!-- Trolley Items List -->
           <div class="cart-items-container" id="cartItemsContainer">
             <!-- Dynamic Cart Items Rendered Here -->
@@ -183,7 +191,7 @@
                 <i data-lucide="shopping-cart"></i>
               </div>
               <h3>Troli Belanja Masih Kosong</h3>
-              <p>Masukkan barang yang Anda ambil dari rak supermarket untuk memantau harga dan kuota anggaran.</p>
+              <p>Keranjang masih kosong, tambahkan kebutuhan pokok pertamamu</p>
               <div class="empty-actions">
                 <button class="btn-primary-mobile" id="btnEmptyAdd">
                   <i data-lucide="plus"></i> Tambah Item Pertama
@@ -224,7 +232,7 @@
             </div>
           </div>
 
-          <!-- Baseline Reference Card (F-04 comparison reference) -->
+          <!-- Baseline Reference Card (comparison reference) -->
           <div class="comparison-baseline-card">
             <div class="baseline-header">
               <i data-lucide="git-compare"></i>
@@ -361,8 +369,9 @@
               <label class="form-label" for="formItemName">Nama Produk / Barang <span class="required">*</span></label>
               <div class="input-icon-wrapper">
                 <i data-lucide="tag" class="field-icon"></i>
-                <input type="text" id="formItemName" class="form-input" placeholder="Misal: Beras Ramos, Telur Ayam, Minyak..." required autocomplete="off">
+                <input type="text" id="formItemName" class="form-input" placeholder="Misal: Beras Rojolele, Minyak, Telur..." required autocomplete="off" list="catalogDatalist">
               </div>
+              <datalist id="catalogDatalist"></datalist>
               <!-- Realtime Autocomplete dropdown based on history -->
               <div class="autocomplete-list hidden" id="itemSuggestions"></div>
             </div>
@@ -413,7 +422,7 @@
             <div class="form-group">
               <div class="label-with-meta">
                 <label class="form-label" for="formUnitPrice">Harga Satuan Barang <span class="required">*</span></label>
-                <!-- F-04 Indicator inside form -->
+                <!-- Indicator inside form -->
                 <span class="compare-badge-mini hidden" id="formCompareBadge">
                   <span id="formCompareIcon">↑</span> <span id="formCompareText">Naik</span>
                 </span>
@@ -438,7 +447,7 @@
               </div>
             </div>
 
-            <!-- F-03: KALKULATOR DISKON BERTINGKAT -->
+            <!-- KALKULATOR DISKON BERTINGKAT -->
             <div class="discount-accordion-card">
               <div class="discount-header" id="btnToggleDiscount">
                 <div class="disc-title-left">
@@ -476,7 +485,7 @@
                   </div>
                 </div>
 
-                <!-- Step-by-Step Discount Breakdown Calculation (SRS F-03) -->
+                <!-- Step-by-Step Discount Breakdown Calculation -->
                 <div class="discount-calculation-box" id="discountCalcBox">
                   <div class="calc-step-line">
                     <span>Harga Normal:</span>
@@ -500,7 +509,7 @@
               </div>
             </div>
 
-            <!-- F-02: Total Realtime Perhitungan Kuantitas Otomatis -->
+            <!-- Total Realtime Perhitungan Kuantitas Otomatis -->
             <div class="form-total-preview-card">
               <div class="preview-line">
                 <span class="preview-label">Subtotal Barang Ini:</span>
@@ -565,7 +574,7 @@
                   <span class="checkbox-custom"></span>
                   <span class="checkbox-text">
                     <strong>Jadikan basis komparasi harga</strong>
-                    <small>Gunakan harga barang sesi ini untuk perbandingan belanja bulan depan (F-04).</small>
+                    <small>Gunakan harga barang sesi ini untuk perbandingan belanja bulan depan.</small>
                   </span>
                 </label>
               </div>
@@ -625,17 +634,20 @@
     </div>
   </div>
 
+  <!-- Master Supermarket Catalog (500+ Items) -->
+  <script src="catalog-data.js?v=3.4.2"></script>
+
   <!-- Firebase Cloud Integration Module -->
-  <script type="module" src="firebase-service.js?v=3.4.1"></script>
+  <script type="module" src="firebase-service.js?v=3.4.2"></script>
 
   <!-- Main Application Script -->
-  <script src="app.js?v=3.4.1"></script>
+  <script src="app.js?v=3.4.2"></script>
 
   <!-- Service Worker Registration for PWA -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3.4.1')
+        navigator.serviceWorker.register('./sw.js?v=3.4.2')
           .then((reg) => { reg.update(); console.log('PWA ServiceWorker registered & updated:', reg.scope); return reg; })
           .then((reg) => console.log('PWA ServiceWorker registered with scope:', reg.scope))
           .catch((err) => console.warn('PWA ServiceWorker registration failed:', err));
